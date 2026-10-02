@@ -1,0 +1,11 @@
+{
+  "method": "zeroshot-codex",
+  "provider": "codex",
+  "model": "gpt-6-astra",
+  "command": "codex exec --yolo --model gpt-6-astra --json",
+  "timeout_seconds": null,
+  "workspace": "is-there-a-sounds-like-ai-direction-be3c-zeroshot-codex-gpt-6-astra",
+  "github_url": "https://github.com/Hypogenic-AI/is-there-a-sounds-like-ai-direction-be3c-zeroshot-codex-gpt-6-astra",
+  "started_at": "2026-10-02T23:30:07Z",
+  "status": "running"
+}
