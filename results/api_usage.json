@@ -1,0 +1,14 @@
+{
+  "saved_rating_responses": 1570,
+  "model_ids": [
+    "anthropic/claude-haiku-4.5"
+  ],
+  "prompt_tokens": 727758,
+  "completion_tokens": 272226,
+  "provider_reported_cost_usd": 2.088888,
+  "finish_reasons": {
+    "length": 1492,
+    "stop": 78
+  },
+  "note": "Usage of saved rating responses only; excludes quota probes and any unlogged request retries. All used rating objects passed schema/range checks; trailing explanations may be truncated."
+}

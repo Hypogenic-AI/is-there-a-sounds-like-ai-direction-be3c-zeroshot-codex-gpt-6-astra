@@ -1,0 +1,5 @@
+condition,coherence,adequacy,ai_style
+original,4.45,3.2,71.0
+repeated,1.0,1.05,51.0
+shuffled,1.15,1.3,41.3
+unrelated,4.55,1.0,65.5

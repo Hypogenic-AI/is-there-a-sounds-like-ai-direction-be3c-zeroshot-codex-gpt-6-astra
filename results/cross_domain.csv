@@ -1,0 +1,9 @@
+model,heldout_domain,train_pairs,test_pairs,auc
+base,finance,375,50,0.9992
+base,medicine,375,50,0.9935999999999999
+base,reddit_eli5,375,50,1.0
+base,wiki_csai,375,50,0.9832000000000001
+instruct,finance,375,50,0.9992
+instruct,medicine,375,50,0.994
+instruct,reddit_eli5,375,50,0.998
+instruct,wiki_csai,375,50,0.978

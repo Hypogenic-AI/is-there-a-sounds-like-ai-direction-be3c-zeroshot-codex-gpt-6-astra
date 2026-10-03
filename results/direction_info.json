@@ -1,0 +1,20 @@
+{
+  "layer": 21,
+  "validation_auc": {
+    "7": 0.9654,
+    "14": 0.9739,
+    "21": 0.9889
+  },
+  "auth_norm": 13.613463401794434,
+  "train_mean_residual_norm": 142.9459686279297,
+  "orth_retained_norm_fraction": 0.8902912313126743,
+  "cosines": {
+    "formality": 0.29435056493963724,
+    "persona_proxy": 0.26116626058587705,
+    "log_original_length": 0.27420764175245754,
+    "nll": -0.29224611719886895,
+    "finance": -0.013047722909887111,
+    "medicine": -0.11647698245924104,
+    "reddit_eli5": -0.13053173391246956
+  }
+}

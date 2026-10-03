@@ -1,0 +1,7 @@
+{
+  "model": "desklib/ai-text-detector-v1.01",
+  "revision": "5fdea974cd4287c61674951ec78803aa274e2fb7",
+  "max_length": 768,
+  "dtype": "float32",
+  "strict_weight_loading": "<All keys matched successfully>"
+}

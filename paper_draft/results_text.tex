@@ -1,0 +1,50 @@
+\subsection{Readout transfers without consistent chat amplification}
+Validation selects block 21 (mean-direction AUROC 0.989). At that block, the instruct mean direction achieves HC3 test AUROC 0.992, with 0.893 and 0.885 on HAP-E GPT-4o-mini and Llama-3-8B-Instruct, respectively. The corresponding base-model results are 0.993, 0.896, and 0.869. Logistic probes further improve separability (Table~\ref{tab:readout}). These measurements support a transferable readout, but not a consistent amplification from instruction tuning. Base/instruct differences vary by generator and readout. No base-model generation intervention is tested.
+
+\begin{table*}[t]
+\centering\small
+\resizebox{\textwidth}{!}{\input{tables/readout}}
+\caption{Readout AUROC at the validation-selected block 21, with paired/document bootstrap 95\% intervals. HC3 has 200 test pairs; each HAP-E comparison has 180 document pairs. Logistic probes and mean-difference vectors are fit on the same 500 HC3 training pairs.}
+\label{tab:readout}
+\end{table*}
+\begin{figure}[t]
+\centering\includegraphics[width=\columnwidth]{figures/readout.pdf}
+\caption{Mean-direction readout by block. Transfer remains above chance for both base and instruct models; chat tuning does not uniformly improve it.}
+\label{fig:readout}
+\end{figure}
+
+Leave-one-domain-out mean-direction AUROCs range from 0.978 to 0.999 for instruct and from 0.983 to 1.000 for base (appendix). Thus the HC3 readout is not merely a classifier of the four domain labels. Matching and normalization cannot eliminate every within-domain discourse or collection artifact, however.
+
+\subsection{A causal detector effect, with asymmetric quality costs}
+In the primary sweep, quality ratings and filters use Mistral; the late audit below supplies a stricter independent assessment. Positive HC3 authorship steering raises the legacy RoBERTa score from 0.368 at baseline to 0.554 at $+1$ and 0.700 at $+2$. Paired changes are $+0.186$ [0.082, 0.292] and $+0.332$ [0.220, 0.448]. The $+1$ minus $-1$ contrast is $0.248$ [0.149, 0.355]. Because questions, decoding, and prompts are fixed, this identifies an effect of the specified residual intervention on the downstream score.
+
+The reverse intervention is less persuasive as a humanization method. At $-1$, the score falls by 0.062, with an interval crossing zero [$-0.168$, 0.045]. At $-2$, it rises slightly rather than falling further. Adequacy drops by 0.600 points [$-0.900$, $-0.333$] and coherence by 0.333 [$-0.533$, $-0.150$]. Only 53 of 60 answers satisfy the automated quality threshold, compared with all 60 baseline answers. In contrast, positive $+1$ steering changes adequacy by 0.017 [$-0.100$, 0.117], with all answers passing. These are quality-proxy outcomes, not proof of factual equivalence.
+
+\begin{figure*}[t]
+\centering\includegraphics[width=\textwidth]{figures/dose.pdf}
+\caption{Primary HC3-direction dose response, relative to the same-question baseline. Error bars are paired 95\% bootstrap intervals. The AI-style judge is unsuccessful at provenance discrimination (Table~\ref{tab:calibration}), so its near-flat response cannot validate or refute perceptual humanization. Negative extreme steering reduces rated adequacy.}
+\label{fig:dose}
+\end{figure*}
+
+Centered ablation lowers RoBERTa by 0.132 [$-0.231$, $-0.031$], with mean adequacy change $-0.067$ [$-0.150$, 0.017]. The human-style prompt changes its score by $-0.062$ [$-0.162$, 0.035]. Both results are included alongside the full sweep, rather than choosing the best-performing intervention after observing outcomes. On exactly 64-token output prefixes, $+2$ retains a positive legacy-detector effect of 0.282 [0.166, 0.394], whereas the $+1$ interval crosses zero. Different eligibility sets and shorter evidence windows limit direct comparison with full answers.
+
+\subsection{Specificity survives some, but not all, controls}
+The authorship direction has cosine similarities 0.294 with formality, 0.261 with the persona proxy, 0.274 with original length, and $-0.292$ with the likelihood nuisance. Joint removal retains 89.0\% of its norm before rescaling. The orthogonalized direction still has a RoBERTa sign contrast of 0.206 [0.074, 0.334], with all 60 positive/negative pairs satisfying the quality criterion. This argues against those \emph{estimated linear nuisance axes} completely explaining the intervention.
+
+Specificity is incomplete. The authorship sign effect exceeds the formality control by 0.362 [0.216, 0.504] and the persona proxy by 0.201 [0.033, 0.377]. It also exceeds random seed 101, but not conclusively random seed 202: the latter itself has a sign effect of 0.138 [0.027, 0.253], and the authorship-minus-random difference is 0.110 [$-0.042$, 0.272]. Two random directions are a limited sample of perturbation space. Figure~\ref{fig:controls} shows the control contrasts, and the appendix reports every condition.
+
+\begin{figure*}[t]
+\centering\includegraphics[width=0.93\textwidth]{figures/controls.pdf}
+\caption{Positive minus negative equal-norm interventions at magnitude 1. The legacy detector responds to the authorship and nuisance-orthogonalized directions, but also to one random direction. The blinded style judge is not a reliable authorship detector on the audit sets.}
+\label{fig:controls}
+\end{figure*}
+
+\subsection{Evaluator validity changes the interpretation}
+\input{evaluation_results}
+
+\subsection{Cross-corpus causal replication}
+\input{transfer_results}
+
+\subsection{Late external style and quality audit}
+\label{sec:claude}
+\input{claude_results}

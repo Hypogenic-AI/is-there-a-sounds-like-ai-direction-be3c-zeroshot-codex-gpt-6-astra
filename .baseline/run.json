@@ -7,5 +7,10 @@
   "workspace": "is-there-a-sounds-like-ai-direction-be3c-zeroshot-codex-gpt-6-astra",
   "github_url": "https://github.com/Hypogenic-AI/is-there-a-sounds-like-ai-direction-be3c-zeroshot-codex-gpt-6-astra",
   "started_at": "2026-10-02T23:30:07Z",
-  "status": "running"
+  "status": "completed",
+  "completed_at": "2026-10-03T00:34:29Z",
+  "return_code": 0,
+  "elapsed_seconds": 3860.1612355709076,
+  "timed_out": false,
+  "paper_pdf": "paper_draft/main.pdf"
 }

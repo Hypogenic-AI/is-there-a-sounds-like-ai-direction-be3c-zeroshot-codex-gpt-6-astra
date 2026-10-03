@@ -1,0 +1,9 @@
+{
+  "generations": 1140,
+  "control_generations": 160,
+  "transfer_generations": 120,
+  "judge_raw": 1570,
+  "detector_scores": 1510,
+  "modern_detector_scores": 2605,
+  "claude_judge_raw": 1570
+}

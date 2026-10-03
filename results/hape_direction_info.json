@@ -1,0 +1,21 @@
+{
+  "cosine_with_hc3": 0.5889379978179932,
+  "raw_norm": 13.390085220336914,
+  "equal_norm": 13.61346435546875,
+  "train_documents": 180,
+  "train_texts": 540,
+  "readout": [
+    {
+      "dataset": "HC3_test",
+      "auc": 0.9524999999999999
+    },
+    {
+      "dataset": "HAPE_gpt4mini",
+      "auc": 0.9838888888888888
+    },
+    {
+      "dataset": "HAPE_llama8i",
+      "auc": 0.941358024691358
+    }
+  ]
+}

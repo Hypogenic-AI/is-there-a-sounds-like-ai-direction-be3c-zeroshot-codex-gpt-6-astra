@@ -1,0 +1,46 @@
+{
+  "corpus_rows": 1600,
+  "ood_rows": 540,
+  "split_pairs": {
+    "train": 500,
+    "val": 100,
+    "test": 200
+  },
+  "retokenized_lengths": {
+    "96": 2140
+  },
+  "exact_train_test_text_overlap": 0,
+  "exact_train_val_text_overlap": 0,
+  "vector_norms": {
+    "auth": 13.613463401794434,
+    "formal": 13.61346435546875,
+    "persona": 13.613463401794434,
+    "orth": 13.613463401794434,
+    "random101": 13.61346340179443,
+    "random202": 13.613463401794432
+  },
+  "orth_basis_max_cosine": 3.5816757067958287e-16,
+  "generation_counts": {
+    "baseline": 60,
+    "auth_-2": 60,
+    "auth_-1": 60,
+    "auth_-0.5": 60,
+    "auth_0.5": 60,
+    "auth_1": 60,
+    "auth_2": 60,
+    "random101_-1": 60,
+    "random101_1": 60,
+    "random202_-1": 60,
+    "random202_1": 60,
+    "formal_-1": 60,
+    "formal_1": 60,
+    "persona_-1": 60,
+    "persona_1": 60,
+    "orth_-1": 60,
+    "orth_1": 60,
+    "ablate": 60,
+    "prompt_human": 60
+  },
+  "hape_fit_evaluation_document_overlap": 0,
+  "hape_fit_evaluation_text_overlap": 0
+}

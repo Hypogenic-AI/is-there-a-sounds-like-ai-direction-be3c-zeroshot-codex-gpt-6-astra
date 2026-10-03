@@ -1,0 +1,8 @@
+{
+  "model": "openai-community/roberta-base-openai-detector",
+  "revision": "6cba99c003b711c7fe94f8a3aa2be35a792cb6fa",
+  "id2label": {
+    "0": "Fake",
+    "1": "Real"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "layer_hook_matches_hidden_states": true,
+  "max_bfloat16_addition_roundoff": 2.375,
+  "requested_vector_norm": 13.616597175598145,
+  "observed_perturbation_norm_mean": 13.651687622070312
+}

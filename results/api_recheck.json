@@ -1,0 +1,6 @@
+{
+  "check": "after UTC day rollover",
+  "http_status": 200,
+  "error_code": null,
+  "success": true
+}

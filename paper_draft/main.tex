@@ -1,0 +1,140 @@
+\documentclass[10pt,twocolumn]{article}
+\usepackage[letterpaper,margin=0.72in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype,amsmath,amssymb,booktabs,graphicx,xcolor}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,allcolors=blue]{hyperref}
+\usepackage{enumitem,float}
+\setlength{\columnsep}{0.25in}
+\title{From Authorship Readout to Generation Control:\\A Controlled Residual-Stream Study of ``AI-Like'' Writing}
+\author{Autonomous research study\\\small Reproducible code, raw generations, and ratings accompany this manuscript}
+\date{}
+\begin{document}
+\raggedbottom
+\maketitle
+\input{abstract}
+\section{Introduction}
+A model can distinguish human-written from machine-written text without possessing a single causal control for sounding machine-written. A readout may combine formatting, discourse conventions, register, subject matter, or fluency. Moreover, representations used while reading an isolated passage need not have the same function while generating an answer in a conversation. Establishing linear separability therefore leaves a mechanistic question unresolved: does intervening along a separating direction change perceived authorship while preserving useful content?
+
+We study this question in Qwen2.5-1.5B, comparing base and instruction-tuned representations and intervening in the instruction-tuned model. We use question-matched, length-controlled human/ChatGPT excerpts to estimate a dense mean-difference direction. We test transfer to human and machine continuations of identical prefixes from two other generators. For generation, we vary intervention sign and magnitude, compare equal-norm random and nuisance directions, remove a nuisance subspace, ablate the centered authorship projection, and include a simple human-style prompt.
+
+Our estimand is the paired change in external scores caused by a specified activation intervention on a fixed set of questions. It is not the probability that a text was actually written by a human: all generated answers have machine provenance. We distinguish causal changes in a detector's output from identification of a unique ``AI-ness'' representation. The latter requires specificity, external agreement, and preserved quality, beyond the fact that an intervention changes wording.
+
+\section{Related work}
+\paragraph{Authorship readout.} Quaremba et al.~\cite{quaremba2026} study linear probes for machine-text detection and a shared latent machine-text direction. SV-Detect~\cite{vishnyakov2026} uses per-layer human--machine directions and their alignment features to construct a detector. These results motivate the readout construction here, but detection performance alone does not validate an intervention during decoding.
+
+\paragraph{Prior generative interventions.} Kuznetsov et al.~\cite{kuznetsov2025} analyze Gemma residual-stream SAE features for detection and explicitly steer selected decoder features during generation. Their feature interpretations include sophistication, expansion, and domain-specific behavior; their analysis also emphasizes length and formatting artifacts. Thus generative manipulation of detection-related features is already established. Our narrower experiment evaluates a dense paired authorship vector with independently scored outcomes and matched control interventions. We do not claim the first causal study of detection features.
+
+\paragraph{Steering and persona.} Activation addition~\cite{turner2023} and contrastive activation addition~\cite{rimsky2023} motivate our inference-time vector interventions. Lu et al.~\cite{lu2026} identify an Assistant Axis using a broad collection of personas and show that persona interventions change behavior. Our small assistant-versus-storyteller contrast is a nuisance \emph{proxy}, not a replication of that axis. Disentangling it cannot establish independence from the full persona space.
+
+\paragraph{Corpora and detection.} HC3~\cite{guo2023} supplies human and ChatGPT answers to common questions; its different writing communities remain a potential confound. HAP-E~\cite{reinhart2024} supplies human continuations and model continuations of the same preceding text, with a prompt requesting stylistic continuity. We also evaluate a frozen RoBERTa detector released for GPT-2 outputs~\cite{solaiman2019}. Its historical training distribution makes empirical validation necessary; it is not an authorship oracle.
+
+\section{Method}
+\subsection{Paired data and representations}
+We select the first answer from each author class meeting a minimum of 96 Qwen tokens. Before tokenization, we collapse whitespace, remove whitespace before punctuation, and join selected spaced English contractions. We use the first 96 tokens of each answer, with no question, chat template, or authorship label in the representation-extraction input. All retained excerpts retokenize to exactly 96 tokens. We deduplicate normalized questions and exact excerpts before splitting.
+
+Our HC3 subset contains 500 training, 100 validation, and 200 test question pairs, balanced across finance, medicine, Reddit ELI5, and computer science/AI. Each pair contributes one human and one ChatGPT excerpt. Open-domain QA is excluded because only 41 pairs meet the length threshold, insufficient for the balanced design. Splits are disjoint by question, and train/validation/test have no exact excerpt overlap. The pre-outcome protocol and data-integrity amendments are included in the artifacts.
+
+For transfer, we sample 180 shared HAP-E documents, 30 from each of its six registers. We compare the human \emph{second} chunk, not the prompting first chunk, with GPT-4o-mini and Llama-3-8B-Instruct continuations. Each generator comparison has 180 human and 180 machine excerpts; the human excerpts are shared across comparisons. All transfer excerpts receive the same normalization and 96-token cap. Transfer documents are never used to fit or select a direction.
+
+We use public Qwen2.5-1.5B base and instruct checkpoints~\cite{qwen2024}, with bfloat16 inference. Let $h_{\ell,t}(x)$ denote the residual after transformer block $\ell$ for token $t$ of excerpt $x$. We compute
+\begin{equation}
+ z_\ell(x)=\frac{1}{96}\sum_{t=1}^{96}h_{\ell,t}(x),\quad
+ d_\ell=\frac{1}{N}\sum_{i=1}^N[z_\ell(a_i)-z_\ell(b_i)],
+\end{equation}
+where $a_i$ is the machine answer and $b_i$ its human counterpart. We evaluate scalar scores $z_\ell(x)^\top d_\ell$ and an L2 logistic probe ($C=1$, unstandardized features, intercept) at blocks 7, 14, and 21. The intervention block maximizes validation AUROC of the \emph{instruct mean direction}, with the earlier block winning ties. Logistic probes do not define our intervention. Base/instruct comparisons use the same data and blocks; we do not transfer an instruct vector into base coordinates.
+
+\subsection{Interventions and controls}
+For greedy decoding, we intervene after a single block:
+\begin{equation}
+ h'_{\ell,t}=h_{\ell,t}+\alpha d_\ell.
+\end{equation}
+The hook acts on all prompt positions during prefill and on each new token during cached decoding. We test $\alpha\in\{-2,-1,-0.5,0,0.5,1,2\}$. These units are multiples of the empirical class-mean difference, not residual standard deviations. Two Gaussian control directions (seeds 101 and 202) are each normalized to $\|d_\ell\|_2$ and tested at signs $\pm1$.
+
+To estimate nuisance directions, we generate answers to 40 \emph{training} questions, ten per domain, under four prompts: formal academic register, casual conversational register, helpful professional AI assistant, and whimsical fictional storyteller. Each requests an accurate answer of about 80 words. We re-encode normalized answer text alone, mean-pooling up to its first 96 tokens. Formal-minus-casual and assistant-minus-storyteller means define register and persona-proxy directions. Both are rescaled to $\|d_\ell\|_2$ and tested at $\pm1$. These interventions control for the effect of their specified contrasts, not all possible forms of formality or identity.
+
+We also form train-only covariance directions for log original answer length and instruct-model negative log likelihood (NLL), subtracting the within-authorship-class means of both the covariate and activations first. This avoids defining these nuisance vectors solely by class membership. Three domain-centroid contrasts complete the nuisance span. With $Q$ an orthonormal basis for these seven vectors, we define
+\begin{equation}
+ d_{\perp}=\|d\|_2\frac{(I-QQ^\top)d}{\|(I-QQ^\top)d\|_2},
+\end{equation}
+and test it at $\pm1$. Equal norm makes this a directional specificity test, not a comparison of smaller perturbations. Orthogonality is a geometric constraint and does not guarantee semantic independence after nonlinear downstream computation.
+
+For centered projection ablation, $u=d/\|d\|_2$ and $c$ is the midpoint of training class means:
+\begin{equation}
+ h'=h-u[u^\top(h-c)].
+\end{equation}
+This sets each intervened token's projection to the midpoint. It is distinct from subtracting a constant vector. Finally, a no-hook prompt baseline adds: ``Write like a human, with natural wording rather than a typical AI-generated answer.''
+
+\subsection{Generation and external evaluation}
+We use 60 held-out HC3 questions, 15 per domain, with the same question in every condition. The standard instruction asks for a clear answer in one short paragraph of about 80 words. Greedy decoding permits at most 160 new tokens. There are 19 conditions and 1,140 generated answers, plus 160 nuisance-control answers. Conditions are not selected using detector outcomes.
+
+We score complete generated answers with the frozen \texttt{roberta-base-openai-detector}, taking the softmax score for its \texttt{Fake} label (maximum 512 detector tokens). Independently, Mistral-7B-Instruct-v0.3~\cite{jiang2023} receives the question and anonymous answer, without intervention identifiers or provenance labels. It assigns AI-like \emph{style} on a 0--100 scale, coherence, answer adequacy, and formality on 1--5 scales. Adequacy explicitly asks about correctness and relevance. The judge is instructed to ignore excerpt truncation alone but penalize repetition, nonsensical language, and factual errors. Full prompts and raw completions are preserved. Neither evaluator uses the Qwen activations or trains on the fit split.
+
+The local judge replaced the planned API judge because the provided OpenRouter endpoint rejected requests due to a daily key limit and the fallback OpenAI key was invalid. The initial study used no successful API ratings. After the UTC-day quota reset, a late Claude Haiku 4.5 audit evaluated the already fixed outputs with the same rubric; Section~\ref{sec:claude} reports it separately. A local judge is an imperfect automated measure; in particular, correctness scores are not expert fact checks. We audit both evaluators on 80 held-out HC3 pairs and 30 HAP-E document triplets (250 texts total). This audit involves no fitting or threshold tuning.
+
+\subsection{Analysis and quality controls}
+We report mean outcomes and within-question changes relative to baseline, with percentile bootstrap confidence intervals from 2,000 question-level resamples. For readout AUROC, bootstrap units are question pairs or HAP-E documents. Confidence intervals are exploratory and uncorrected for multiple comparisons. We also compare positive and negative interventions directly, holding questions fixed.
+
+Primary quality comparisons use Mistral ratings; the late audit repeats them using Claude. A quality-qualified pair requires coherence $\geq4$ and adequacy $\geq4$ for both the baseline and modified answer. We report its size and score changes, alongside the unconditional analysis. This is a descriptive quality filter, \emph{not} a causal adjustment: conditioning on post-intervention quality can select different questions in different conditions. It cannot establish equivalence or content preservation on the original prompt population.
+
+We record generated length, repeated word-trigram fraction, and unmodified base-Qwen NLL on the first 96 tokens. A supplemental frozen-detector analysis uses exactly 64 Qwen tokens when both outputs are long enough. This checks a length explanation but again conditions on post-treatment eligibility. Leave-one-domain-out readout refits the mean direction on three training domains and evaluates the fourth test domain. Software checks verify split integrity, equal control-vector norms, nuisance orthogonality, and agreement between hidden-state indexing and the intervention hook.
+
+\section{Results}
+\input{results_text}
+
+\section{Discussion and limitations}
+\input{discussion}
+
+\section{Conclusion}
+\input{conclusion}
+
+\paragraph{Reproducibility and research ethics.}
+Code, pinned revisions, split manifests, activation summaries, raw generations, raw ratings, and numerical analyses accompany this paper. All reported experimental numbers originate from executed code; no estimated or synthetic outcomes substitute for failed calls. The study was implemented and written autonomously by an AI agent, with no human ratings or expert factual review. Detector scores concern style and historical classifier behavior, not reliable attribution of individual authors. The results should not be used for allegations of misconduct. Large model and dataset files are excluded from version-controlled artifacts; scripts recover them from pinned public sources.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+\clearpage
+\onecolumn
+\appendix
+\section{Complete intervention outcomes}
+\begin{table}[H]
+\centering\small
+\input{tables/all_conditions}
+\caption{All conditions, 60 questions each. Detector is the frozen RoBERTa Fake score; AI style is the blinded Mistral rating. Coherence and adequacy are on 1--5 scales. Pass requires both at least 4. Tokens count non-padding generated Qwen tokens, excluding the end token.}
+\end{table}
+\begin{table}[H]
+\centering\scriptsize
+\resizebox{\textwidth}{!}{\input{tables/effects}}
+\caption{Changes from baseline and paired 95\% bootstrap intervals. $Q$ denotes the subset where baseline and intervention both satisfy the quality threshold; $n_Q$ is the number of such questions. These subsets differ by intervention and are descriptive, not randomized comparisons at fixed quality.}
+\end{table}
+\section{Additional controls}
+\begin{table}[H]
+\centering\small\input{tables/cross_domain}
+\caption{Leave-one-domain-out mean-direction AUROC at the selected block, trained on 375 question pairs and tested on 50 pairs in the excluded domain.}
+\end{table}
+\begin{table}[H]
+\centering\small\input{tables/cosines}
+\caption{Cosines of the authorship direction with train-only nuisance axes before joint orthogonalization. Persona is an assistant/storyteller proxy; original length is measured before the excerpt cap.}
+\end{table}
+\begin{table}[H]
+\centering\scriptsize\input{tables/fixed64}
+\caption{Frozen-detector changes on exactly 64 Qwen tokens, restricting to pairs with sufficiently long baseline and intervention outputs. Eligibility can depend on treatment.}
+\end{table}
+\begin{table}[H]
+\centering\scriptsize
+\resizebox{\textwidth}{!}{\input{tables/modern}}
+\caption{Exploratory Desklib detector outcomes for all primary and transfer conditions. Changes are paired relative to baseline, with 95\% bootstrap intervals. Detected uses a conventional 0.5 cutoff, not a threshold selected on these data. $n_{64}$ counts eligible fixed-prefix pairs. Logits were added after observing saturation.}
+\label{tab:modernall}
+\end{table}
+\begin{table}[H]
+\centering\small\input{tables/orth}
+\caption{Readout AUROC for original and nuisance directions. Orthogonalization uses training data only and improves transfer in this run.}
+\end{table}
+\begin{table}[H]
+\centering\scriptsize
+\resizebox{\textwidth}{!}{\input{tables/claude}}
+\caption{Late Claude audit, all conditions. AI style is on 0--100; adequacy is on 1--5. Pass requires coherence and adequacy at least 4. $n_Q$ counts pairs passing under both baseline and intervention. Changes and intervals are paired by question; quality-qualified subsets are descriptive and treatment-dependent.}
+\label{tab:claudeall}
+\end{table}
+\input{appendix_extra}
+\end{document}

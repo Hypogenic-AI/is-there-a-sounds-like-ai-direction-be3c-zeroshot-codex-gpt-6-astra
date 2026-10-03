@@ -1,0 +1,13 @@
+direction,dataset,auc
+auth,HC3_test,0.99195
+auth,HAPE_gpt4mini,0.8927469135802469
+auth,HAPE_llama8i,0.8845061728395063
+orth,HC3_test,0.98415
+orth,HAPE_gpt4mini,0.9454938271604939
+orth,HAPE_llama8i,0.9409876543209876
+formal,HC3_test,0.7287
+formal,HAPE_gpt4mini,0.6862962962962963
+formal,HAPE_llama8i,0.5895061728395061
+persona,HC3_test,0.7448499999999999
+persona,HAPE_gpt4mini,0.340216049382716
+persona,HAPE_llama8i,0.3866666666666667
